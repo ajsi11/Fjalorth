@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8">
+<title>Libër Digjital – Fjalë & Urtësi Popullore</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  background:#d4c9bb;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  font-family:Georgia, serif;
+  overflow:hidden;
+}
+
+.book-wrapper{ position:relative; }
+
+.book{
+  width:1000px;
+  height:650px;
+  perspective:4000px;
+  position:relative;
+}
+
+.spine{
+  position:absolute;
+  left:50%;
+  top:0;
+  width:28px;
+  height:650px;
+  background:linear-gradient(to right,#666,#444,#666);
+  transform:translateX(-50%);
+  z-index:2000;
+}
+
+.page{
+  position:absolute;
+  width:500px;
+  height:650px;
+  top:0;
+  padding:45px;
+  background:#fffdf8;
+  box-shadow:0 18px 40px rgba(0,0,0,.35);
+  box-sizing:border-box;
+  transform-style:preserve-3d;
+  backface-visibility:hidden;
+  transition:transform 1s ease;
+  overflow:hidden;
+}
+
+.page-content{
+  height:100%;
+  overflow-y:auto;
+  font-size:18px;
+  line-height:1.65;
+}
+
+.page h2{
+  text-align:center;
+  font-size:11px;
+  margin:0 0 18px 0;
+  font-weight:normal;
+}
+
+.flipped.left{ transform:rotateY(180deg); }
+.flipped.right{ transform:rotateY(-180deg); }
+.left{ left:0; transform-origin:right; }
+.right{ right:0; transform-origin:left; }
+
+
+.controls{
+  position:absolute;
+  bottom:-90px;
+  width:100%;
+  display:flex;
+  justify-content:center;
+  gap:30px;
+}
+
+button{
+  padding:14px 32px;
+  font-size:16px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="book-wrapper">
+  <div class="book" id="book"></div>
+  <div class="spine"></div>
+
+  <div class="controls">
+    <button onclick="prevPage()">▶KTHE PAS</button>
+    <button onclick="nextPage()">◀ KTHE PARA</button>
+  </div>
+</div>
+
+<script>
+
+const TOTAL_PAGES = 26;
+const MAX_CHARS_PER_PAGE = 500;
+
+const book = document.getElementById("book");
+let currentPage = 0;
+const pages = [];
+
+const fullText =`
+
+const cover = createCoverPage('kopertina.jpeg'); 
+book.appendChild(cover);
+
+-Per kete liber kane punuar: AJSELA RAPI 
+DENISA SHUAIPI  REI MULLA  SAMANTA LEKA  SELMA SHALA
+-Burimi jane : librat e vjeter, interneti, tekstet shkollore, vezhgime ne terren ne zona te ndryshme, etj.
+-Ky fjalorth ka ne thelb te ndihmoije pasurimin e gjuhes dhe te kuptuarit e saj
+-Ka shprehje dhe fjale te krainave te ndryshme
+
+
+
+
+
+
+
+
+
+FJALE NGA ZONA E HIMARES 
+
+arez-grerez 
+
+cukthi-akrepi 
+
+valanidhi- nje lloj lisi 
+
+aguridha-frut i pabere 
+
+kulish-klysh, i vogli i qenit 
+
+kallame-rremuje 
+
+fice-lloj leshteriku i gjate, i sheshte e i lemuar 
+
+kaiqe-varke e vogel peshkimi 
+
+voze-fuci metalike 
+
+pockar-sepate e vogel 
+
+njedizaj-pardie, nje lloj cope 
+
+dhiksere-qyp prej balte i perdorur per ruajtjen e gjizes, djathit a gjalpit 
+
+cini-ene qelqi per mbajtjen e ujit 
+
+sepete- senduk 
+
+buari-oxhaku i shtepise 
+
+argali-tezgjahe 
+
+lemishte-shkarpat, drunite 
+
+bode-qyp prej balte per transportimin e ujit 
+
+arglidha- lloj ulliri i eger 
+
+sahan- tas alumini per te ngrene 
+
+cetur-kupe prej druri per te ngrene bariu 
+
+bina-femije 
+
+skordhala-gatim me patate te shtypura dhe me hudher 
+
+furke-tjerrëse e leshit 
+
+ngjalme-lidhese 
+
+papuli-gjyshi 
+
+tromaksem-trembem shume 
+
+kucur-drurite e perdorur per oxhakut 
+
+hon- buze, germine 
+
+jipi-stive me kashtë dhe bar 
+
+helmeze-bime ne forme shkurre me lule, te bardha, te kuqe, por me shpesh roze 
+
+Spithar- rezervuar i vogel uji i mbledhur prej nje grope ne shkemb  
+
+Lenga- toke e ngjashme me aren  
+
+Mullez- fara e djathit 
+
+Simpethera- kunate
+
+
+FJALE NGA KRAHINA E GJIROKASTRES 
+
+1)talltek- stomak pule 
+
+2)larash-Iloj shpendi e ngjashme me shaiponjen 
+
+3)Buhari-oxhaku 
+
+4) furgis-merzit 
+
+5)Bila-vajze, e vogla e maces 
+
+6)taler-fuci 
+
+7)bucele-fuci prei druri e perdorur per uje a vere 
+
+8)llabane -veshje burrash prei leshi dhie e perdorur per tu mbroitur nga shiu, e ngjashme me mushamane 
+
+9)bide-kotele 
+
+10)velenxe -mbulese a batanie prei leshi 
+
+11)pafille-flete e holle llamarine 
+
+12)xarenxe- vendi ku kripe bagetive 
+
+13)joshe-siyshja 
+
+14)xhixhi-gruaja e xhaxhait, xhaxheshe 
+
+15)gege -gruaja e dajos 
+
+16) koshte- kopesht 1 mbielle me fruta e perime 
+
+17) postige-tapet 1 bere prei lekure kafshe te thare e te punuar 
+
+18)kako-plaka te krishtera, orthodokse 
+
+19) katenxhika-plaka myslimane 
+
+20)merzei -gendrimi nen hije 
+
+21)milore-dele ose dash nie-viecare 
+
+22)ruze-dele shterpe 
+
+23)proftas-arrii 
+
+24)veder-ena llamarione me te cilen mileshin bagetite ne kohet e para 
+
+25)mastrepa-ene prei bakri 1-litroshe per mbaitien e yiis 
+
+26)mesarak-korridori 
+
+27)kamare-ndarie e vogel e future ne mur, raft 
+
+28) Capello-fig te thate 
+
+29)cangadhe-bageti  
+
+30)cingris-ngacmoi, ngacmon 
+
+ 
+
+FJALE NGA KRAHINA E SARANDES 
+
+1)ushunje-dhjam I shkrire 
+
+2)kapister-freret ge vihen ne turinjte e kalit 
+
+3)llohe-shi I forte dhe i rrembyeshem 
+
+4)cukunidhe-hithra, bime me giemba qe djegin kur i prek 
+
+5) mandile-shamia qe mbajne grate ne koke, sidomos plakat 
+
+6)kunupe-mushkonja 
+
+7)argat-punonjes ne meditje 
+
+8)millona-mullixhi 
+
+9)urrel-qumesht lekure, qumesht ne te cilin hidhet lekure dhie dhe eshte e ngiashme me salcen e kosit 
+
+10) mesalle-mbulesa e ngrenies qe shtrohet mbi tavoline 
+
+11)mollois-tregoi histori 
+
+12)feks-zbardh 
+
+13)mora punten-mora te ftohtin 
+
+14)xhaba-shume e lire 
+
+15)plevitosem-kam shume ftohte 
+
+16)giezdis-bredh 
+
+17) koronac-cingun, doreshtrenguar 
+
+18)curek-buke e embel 
+
+19) katog- depo poshte shtepise per te mbajtur kafshet 
+
+20)kallamar-pene shkrimi 
+
+21)paksimadhe-buke e thekur fort 
+
+22)cuke-maje kodre 
+
+23)lipsu-zhduku,qerohu 
+
+24)telendare-grua llafazane, grua e lige 
+
+25)baxhure-qepenat, grilat qe mbulojne dritaret 
+
+26)sinor-kufini 
+
+27) burdull-brumbulli 
+
+28)vlitura-nje lloj lakre 
+
+29)riger-insekt i vogel qe ngiltet pas lekures se njeriut dhe kafsheve dhe thith gjakun e tyre 
+
+30)rrodhe-bime me far ate vogla me gjemba qe ngiiten ne gezofin e kafsheve. 
+
+ 
+FJALE NGA KRAHINA E VLORES 
+
+1)terkuz- Iloi litari per ngarkes 
+
+2)shati-xhan, tip perkedhelie 
+
+3)derebardhe-I uruar, I bekuar 
+
+4) derezi-I mallkuar 
+
+5) pocagi-njeri me goje te lige 
+
+6)thellim-I ftohte, I madh 
+
+7)cepeja -floke 
+
+8)stere-vend thelle ne mal ge mban uie te ftahte ne coo stine 
+
+9) fagefurrash-lloj buke e holle 
+
+10)kramastar-tip zinhiri qe varet mbi oxhak ku mbahen tenxheret per te gatuar 
+
+11)trakalice- femer e pa mend 
+
+12)harapash -gatim me miell misri dhe copa mishi ne forme pudingu 
+
+13)bereget-drithera 
+
+14)lento-lento-ngadale, avash 
+
+15)boce -gjyshe 
+
+16)sallhane -grua e lige llafazane 
+
+17)citjane-veshje tradicionale grash, pantallona te gjera te veshura prej grave myslimane 
+
+18)hanko-grate sojme e te pasura ne nivel te larte shoqeror 
+
+19)sinixhi-kumbari qe ben mbleseri 
+
+20)bejte-vargje te kenges 
+
+21)cimbis-pickoj 
+
+22)musender-dollapi per rrobat i bere me dru vendosur ne mur 
+
+23)musllek-ene e varur ne mure per te lare duart, fuksionon si rubinet 
+
+24)tamzan-ene qelqi ku mbahej rakia 
+
+25)llabane-rrobe me lesh dhie qe e perdornin barinjte 
+
+26) pelivan-djale i pashem dhe me cilesi te mira 
+
+27)dollme- pershesh me kulac dhe gjel deti, gatim tradicional per Vitin e Ri 
+
+28)nome-stani qe ngrene barinjte per te fjetur 
+
+29)shilte-lloj jastekesh te medheni qe perdoreshin per tu ulur miqte per raste dasmash ose vdekjesh 
+
+30)jazek-mallkim, "turp te kesh" 
+ 
+
+FJALE NGA KRAHINA E DURRËSIT  
+
+andërr – ëndërr; formë e vjetër e ruajtur në të folmen e mesme (arkaizëm) 
+
+barkëz – enë e vogël druri për lëngje ose ushqim (arkaizëm) 
+
+brekare – pantallona të shkurtra tradicionale (arkaizëm) 
+
+bujrum – ftesë për të hyrë ose për të vepruar (arkaizëm – fjalë e vjetër e huazuar) 
+
+çikrik – vegël për nxjerrjen e ujit nga pusi (arkaizëm) 
+
+damar – forcë e brendshme, energji, shpirt pune (arkaizëm në përdorim figurativ) 
+
+dovlet – mirëqenie, begati (arkaizëm) 
+
+fukarallëk – varfëri e thellë (arkaizëm) 
+
+gjiton – fqinj (arkaizëm) 
+
+hyqym – pushtet, vendim autoritar (arkaizëm) 
+
+ishtar – punëtor krahu, zejtar (arkaizëm) 
+
+kallam – laps ose pendë shkrimi (arkaizëm) 
+
+FJALË NGA KRAHINA E KOSOVËS  
+
+aheng – gosti, festë me këngë e valle (arkaizëm) 
+
+avdes – pastrim ritual para faljes (arkaizëm) 
+
+bacë – vëlla i madh, thirrje respekti për burrë (dialektizëm) 
+
+besë – fjalë e dhënë, nder (arkaizëm) 
+
+bjeshkë – mal i lartë, kullotë alpine (dialektizëm) 
+
+çikë – vajzë e vogël (dialektizëm) 
+
+darsmë – dasmë (dialektizëm) 
+
+derman – zgjidhje, shpëtim (arkaizëm) 
+
+evlat – fëmijë (arkaizëm) 
+
+fukarallëk – varfëri (arkaizëm) 
+
+gjynah – mëkat (arkaizëm) 
+
+hallall – i lejuar, i drejtë (arkaizëm) 
+
+hisë – pjesë që i takon dikujt (arkaizëm) 
+
+kah – drejtim (dialektizëm) 
+
+kismet – fat, caktim (arkaizëm) 
+
+konak – shtëpi pritjeje për mysafirë (arkaizëm) 
+
+mahallë – lagje (arkaizëm) 
+
+meze – ushqim i vogël shoqërues (arkaizëm) 
+
+muhabet – bisedë (arkaizëm) 
+
+odë – dhomë tradicionale pritjeje (dialektizëm) 
+
+pleqni – këshill pleqsh (arkaizëm) 
+
+qaty – aty (dialektizëm) 
+
+rahmet – mëshirë, bekim për të vdekurit (arkaizëm) 
+
+sevdá – dashuri e thellë, mall (arkaizëm) 
+
+sherr – grindje (arkaizëm) 
+
+sofra – tryezë e ulët tradicionale (arkaizëm) 
+
+tash – tani (dialektizëm) 
+
+ters – i prapë, me fat të keq (arkaizëm) 
+
+vallahi – betim, shprehje sigurie (arkaizëm) 
+
+anat – mjeshtëri, profesion (arkaizëm) 
+
+ 
+FJALË TË VJETRA NGA KRAHINA E SHKODRËS  
+
+andërr – ëndërr; formë e vjetër e shqipes, shumë e përdorur në gegërisht (arkaizëm) 
+
+avash – ngadalë, me kujdes (arkaizëm – huazim i vjetër) 
+
+bjeshkë – mal i lartë, kullotë alpine; term i vjetër baritor (dialektizëm me rrënjë të lashta) 
+
+bukëdhânë – mikpritës, njeri që jep bukë e strehë (arkaizëm) 
+
+çehre – fytyrë, pamje e jashtme (arkaizëm) 
+
+derman – zgjidhje, shpëtim nga halli (arkaizëm) 
+
+dylber – djalë i bukur, hijerëndë (arkaizëm) 
+
+fukara – i varfër, pa pasuri (arkaizëm) 
+
+gajret – durim, përpjekje për të përballuar vështirësinë (arkaizëm) 
+
+gjâ – gjë; formë fonetike e vjetër gegë (arkaizëm fonetik) 
+
+ hall – shqetësim, brengë e madhe (arkaizëm) 
+
+hyzmet – shërbim, punë e bërë për dikë (arkaizëm) 
+
+ismet – nder, pastërti morale (arkaizëm) 
+
+katund – fshat (arkaizëm) 
+
+kjanë – kanë qenë; formë e vjetër foljore (arkaizëm gramatikor) 
+
+krye – fillim, pjesë e parë (p.sh. në krye të punës) (arkaizëm) 
+
+marak – shqetësim i brendshëm, mall ose merak (arkaizëm) 
+
+milet – popull, bashkësi njerëzish (arkaizëm) 
+
+mote – kohë e shkuar, vite më parë (arkaizëm) 
+
+nâna – nënë; formë e vjetër gegë (arkaizëm) 
+
+odë – dhomë tradicionale për pritjen e mysafirëve (dialektizëm tradicional) 
+
+pajë – pasuri që nusja merr me vete në martesë (arkaizëm) 
+
+përmot – vitin e kaluar (arkaizëm) 
+
+rahmet – mëshirë; përdoret sidomos për të vdekurit (arkaizëm) 
+
+sevda – dashuri e thellë, mall i dhimbshëm (arkaizëm) 
+
+sofrë – tryezë tradicionale e ulët (arkaizëm) 
+
+tash – tani (dialektizëm i gjallë) 
+
+trimni – trimëri, guxim (arkaizëm) 
+
+vakët – i dobët, pa fuqi (arkaizëm) 
+
+zotni – fisnikëri, sjellje e lartë, nder (arkaizëm) 
+
+ 
+FJALET E VJETRA NGA KRAHINA E CAMERSE 
+
+Ambrulluk – veshje për gratë (arkaizëm) 
+
+Bllac – ushqim (arkaizëm) 
+
+Bureq – byrek (dialekt) 
+
+Bote – katund/fshat (dialekt) 
+
+Cokane – cokë për bagëtinë (dialekt) 
+
+Dyfeq – pushkë (dialekt) 
+
+Foti – dritë (arkaizëm) 
+
+Gune – veshje për burrat (dialekt) 
+
+Gola – goja (arkaizëm) 
+
+Gjuhum – hibrik i madh (arkaizëm) 
+
+Jelek – veshje (dialekt) 
+
+Koca – gërsheta (dialekt) 
+
+Klic – çelës (arkaizëm) 
+
+14. Këmb kuqe – ushqim tradicional (arkaizëm) 
+
+15. Lien – legen (arkaizëm) 
+
+16. Magje – govatë ku lahen rrobat (arkaizëm) 
+
+17. Ognaz – unazë (arkaizëm) 
+
+18. Papllome – jorgan (dialekt) 
+
+19. Parathire – dritare (arkaizëm) 
+
+20. Poce – vorbë (dialekt) 
+
+21. Pinadhe – saç (dialekt) 
+
+22. Pirosti – këmbë për saç (dialekt) 
+
+23. Sufra – sofra (dialekt) 
+
+24. Sandon – çarçaf (dialekt) 
+
+25. Skrapina – këpucë (dialekt) 
+
+26. Stroma – dyshek (dialekt) 
+
+27. Tumane – dimi (dialekt) 
+
+28. Vorua – oborr (dialekt) 
+
+29. Veth – vathë (dialekt) 
+
+ 
+FJALE NGA KRAHINA E DIBRES 
+
+bacë – vëlla i madh; thirrje respekti për një burrë 
+
+çikë – vajzë e vogël 
+
+odë – dhomë tradicionale për pritjen e mysafirëve 
+
+katund – fshat 
+
+kjanë – kanë qenë (formë e vjetër gegë) 
+
+nâna – nënë (formë dialektore) 
+
+babë – baba 
+
+gjâ – gjë (formë fonetike e vjetër) 
+
+hall – brengë, shqetësim i madh 
+
+marak – mall, shqetësim i brendshëm 
+
+mote – kohë e shkuar, vite më parë 
+
+trimni – trimëri, guxim 
+
+vakët – i dobët, pa fuqi 
+
+besë – fjalë e dhënë, nder 
+
+fukara – i varfër, pa pasuri 
+
+gajret – durim, përpjekje për të përballuar vështirësinë 
+
+hyzmet – shërbim, punë e bërë për dikë 
+
+rahmet – mëshirë; përdoret sidomos për të vdekurit 
+
+krye – fillim, pjesë e parë 
+
+pajë – pasuri që nusja merr me vete në martesë 
+
+sofrë – tryezë tradicionale e ulët 
+
+odëz – dhomë e vogël 
+
+derman – zgjidhje, shpëtim nga halli 
+
+avash – ngadalë, me kujdes 
+
+milet – popull, bashkësi njerëzish 
+
+kismet – fat, caktim 
+
+bukëdhânë – mikpritës, njeri që jep bukë e strehë 
+
+gjynah – mëkat 
+
+zanat – mjeshtëri, profesion 
+
+FJALE NGA KRAHINA E TIRANES 
+
+1.Bexhë – turp i madh 
+
+2.Cucërrak – i vogël e i dobët 
+
+3.Çikërrim – bezdi e vogël 
+
+4.Hojdë – tundje, lëkundje 
+
+5.Kërnallë – njeri i gjatë e i thatë 
+
+6.Kërdhokullë – i shkurtër e i trashë 
+
+7.Xhindos – nervoz 
+
+8.Zgërdhi – të qeshësh me përçmim 
+
+9.Zallahi – rrëmujë e madhe 
+
+10.Krodhë – copë e trashë buke 
+
+11.Bubërr – trembje e menjëhershme 
+
+12.Mollois – i butë, i urtë 
+
+13.Rrapëllim – zhurmë e fortë 
+
+14.Trokëllim – goditje që bën zë 
+
+15.Kollovar – njeri që endet pa punë 
+
+16.Zhuritje – djegie e lehtë 
+
+17.Shastis – çuditem, mbetem pa mend 
+
+18.Hajthëm – i bukur, hijerëndë 
+
+19.Tersllëk – ters, fat i keq 
+
+20.Sose – mbaroj 
+
+21.Harram – gjynah 
+
+22.Përtac – dembel 
+
+23.Zgurdull – sy i hapur fort 
+
+24.Mërzitak – njeri që mërzitet shpejt 
+
+25.Dredharak – që shmanget 
+
+26.Hileqar – dinak 
+
+27.Ngashënjim – mallëngjim i thellë 
+
+28.Cikërr – gjë shumë e vogël 
+
+29.Rrafsh – drejt, pa dredhi (në të folmen e vjetër) 
+
+30.Kërrus – i përkulur 
+ 
+
+ 
+`;
+
+ function splitText(text){
+  const chunks = [];
+  let current = "";
+
+  text.split("\n").forEach(line=>{
+    if((current + line).length > MAX_CHARS_PER_PAGE){
+      chunks.push(current);
+      current = line + "\n";
+    }else{
+      current += line + "\n";
+    }
+  });
+
+  if(current.trim()) chunks.push(current);
+  return chunks;
+}
+
+const pageTexts = splitText(fullText);
+
+/* ===== CREATE PAGES ===== */
+for(let i = TOTAL_PAGES; i >= 1; i--){
+  const page = document.createElement("div");
+  page.className = "page " + (i % 2 === 0 ? "right" : "left");
+  page.style.zIndex = i;
+
+  page.innerHTML = `
+    <h2>${i}</h2>
+    <div class="page-content">
+      ${(pageTexts[i-1] || "").replace(/\n/g,"<br>")}
+    </div>
+  `;
+
+  book.appendChild(page);
+  pages.push(page);
+}
+
+/* ===== PAGE TURN ===== */
+function updatePages(){
+  pages.forEach((p,i)=>{
+    i < currentPage ? p.classList.add("flipped") : p.classList.remove("flipped");
+  });
+}
+
+function nextPage(){
+  if(currentPage < pages.length){
+    currentPage++;
+    updatePages();
+  }
+}
+function prevPage(){
+  if(currentPage > 0){
+    currentPage--;
+    updatePages();
+  }
+}
+
+updatePages();
+</script>
+
+</body>
+</html>
