@@ -150,9 +150,6 @@ const pages = [];
 
 const fullText =`
 
-const cover = createCoverPage('kopertina.jpeg'); 
-book.appendChild(cover);
-
 -Per kete liber kane punuar: AJSELA RAPI 
 DENISA SHUAIPI  REI MULLA  SAMANTA LEKA  SELMA SHALA
 -Burimi jane : librat e vjeter, interneti, tekstet shkollore, vezhgime ne terren ne zona te ndryshme, etj.
@@ -768,8 +765,7 @@ FJALE NGA KRAHINA E TIRANES
 
  
 `;
-
- function splitText(text){
+function splitText(text){
   const chunks = [];
   let current = "";
 
@@ -788,8 +784,7 @@ FJALE NGA KRAHINA E TIRANES
 
 const pageTexts = splitText(fullText);
 
-/* ===== CREATE PAGES ===== */
-for(let i = TOTAL_PAGES; i >= 1; i--){
+for(let i = 1; i <= TOTAL_PAGES; i++){
   const page = document.createElement("div");
   page.className = "page " + (i % 2 === 0 ? "right" : "left");
   page.style.zIndex = i;
@@ -805,7 +800,6 @@ for(let i = TOTAL_PAGES; i >= 1; i--){
   pages.push(page);
 }
 
-/* ===== PAGE TURN ===== */
 function updatePages(){
   pages.forEach((p,i)=>{
     i < currentPage ? p.classList.add("flipped") : p.classList.remove("flipped");
