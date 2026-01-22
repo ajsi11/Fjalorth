@@ -784,7 +784,7 @@ function splitText(text){
 
 const pageTexts = splitText(fullText);
 
-for(let i = TOTAL_PAGES; i <=1; i--){
+for(let i = TOTAL_PAGES; i >=1; i--){
   const page = document.createElement("div");
   page.className = "page " + (i % 2 === 0 ? "right" : "left");
   page.style.zIndex = i;
