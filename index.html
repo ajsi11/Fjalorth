@@ -1095,33 +1095,41 @@ book.appendChild(backCover);
 // UPDATE PAGE VISIBILITY
 function updatePages(){
 
-  // ---------- MOBILE MODE ----------
-  if (isMobileView()) {
+// ---------- MOBILE MODE ----------
+if (isMobileView()) {
 
-    frontCover.classList.add("hidden");
-    backCover.classList.add("hidden");
+  frontCover.classList.remove("visible");
+  frontCover.classList.add("hidden");
+  frontCover.style.zIndex = -1;   // 🔥 CRITICAL
 
-    let pageIndex = 1; // pages start at 1
+  backCover.classList.remove("visible");
+  backCover.classList.add("hidden");
+  backCover.style.zIndex = -1;    // 🔥 CRITICAL
 
-    pagePairs.forEach(([left, right]) => {
+  let pageIndex = 1;
 
-      // LEFT page
-      left.style.opacity = (pageIndex === currentPage) ? 1 : 0;
-      left.style.pointerEvents = (pageIndex === currentPage) ? "auto" : "none";
-      left.classList.remove("flipped");
-      pageIndex++;
+  pagePairs.forEach(([left, right]) => {
 
-      // RIGHT page
-      right.style.opacity = (pageIndex === currentPage) ? 1 : 0;
-      right.style.pointerEvents = (pageIndex === currentPage) ? "auto" : "none";
-      right.classList.remove("flipped");
-      pageIndex++;
-    });
+    left.style.opacity = (pageIndex === currentPage) ? 1 : 0;
+    left.style.pointerEvents = (pageIndex === currentPage) ? "auto" : "none";
+    left.style.zIndex = 10;       // ensure visible
+    left.classList.remove("flipped");
+    pageIndex++;
 
-    return;
-  }
+    right.style.opacity = (pageIndex === currentPage) ? 1 : 0;
+    right.style.pointerEvents = (pageIndex === currentPage) ? "auto" : "none";
+    right.style.zIndex = 10;
+    right.classList.remove("flipped");
+    pageIndex++;
+  });
+
+  return;
+}
 
   // ---------- DESKTOP MODE ----------
+frontCover.style.zIndex = 3000;
+backCover.style.zIndex = 3000;
+
   frontCover.classList.toggle("visible", currentPair === 0);
   frontCover.classList.toggle("hidden", currentPair !== 0);
 
