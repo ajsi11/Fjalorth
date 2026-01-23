@@ -1058,7 +1058,7 @@ const pageTexts = splitText(fullText);
 const book = document.getElementById("book");
 
 let currentPair = 0;     // desktop
-let currentPage = 1;     // mobile (IMPORTANT)
+let currentPage = 0;     // mobile (IMPORTANT)
 const pagePairs = [];
 
 // FRONT COVER
@@ -1178,13 +1178,12 @@ function updatePages() {
 
 // PAGE NAVIGATION
 function nextPage() {
-if (isMobileView()) {
-  const totalPages = pagePairs.length * 2;
-  if (currentPage < totalPages) {
-    currentPage++;
-    updatePages();
-  }
-}
+  if (isMobileView()) {
+    const totalPages = pagePairs.length * 2;
+    if (currentPage < totalPages) {
+      currentPage++;
+      updatePages();
+    }
   } else {
     if (currentPair <= pagePairs.length) {
       currentPair++;
@@ -1194,12 +1193,11 @@ if (isMobileView()) {
 }
 
 function prevPage() {
-if (isMobileView()) {
-  if (currentPage > 0) {
-    currentPage--;
-    updatePages();
-  }
-}
+  if (isMobileView()) {
+    if (currentPage > 0) {
+      currentPage--;
+      updatePages();
+    }
   } else {
     if (currentPair > 0) {
       currentPair--;
@@ -1207,6 +1205,7 @@ if (isMobileView()) {
     }
   }
 }
+
 
 // KEYBOARD SUPPORT
 document.addEventListener('keydown', e => {
