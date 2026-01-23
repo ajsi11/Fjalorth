@@ -1093,42 +1093,61 @@ backCover.innerHTML = `<img src="kapaku.jpeg" alt="Back Cover">`;
 book.appendChild(backCover);
 
 // UPDATE PAGE VISIBILITY
-function updatePages(){
+function updatePages() {
 
-// ---------- MOBILE MODE ----------
-if (isMobileView()) {
+  // ---------- MOBILE MODE ----------
+  if (isMobileView()) {
 
-  frontCover.classList.remove("visible");
-  frontCover.classList.add("hidden");
-  frontCover.style.zIndex = -1;   // 🔥 CRITICAL
+    // RESET everything
+    frontCover.classList.remove("visible", "hidden");
+    backCover.classList.remove("visible", "hidden");
 
-  backCover.classList.remove("visible");
-  backCover.classList.add("hidden");
-  backCover.style.zIndex = -1;    // 🔥 CRITICAL
+    frontCover.style.opacity = 0;
+    backCover.style.opacity = 0;
 
-  let pageIndex = 1;
+    pagePairs.forEach(([l, r]) => {
+      l.style.opacity = 0;
+      r.style.opacity = 0;
+      l.style.pointerEvents = "none";
+      r.style.pointerEvents = "none";
+      l.classList.remove("flipped");
+      r.classList.remove("flipped");
+    });
 
-  pagePairs.forEach(([left, right]) => {
+    // PAGE 0 → KOPERTINA
+    if (currentPage === 0) {
+      frontCover.style.opacity = 1;
+      frontCover.style.pointerEvents = "auto";
+      frontCover.style.zIndex = 10;
+      return;
+    }
 
-    left.style.opacity = (pageIndex === currentPage) ? 1 : 0;
-    left.style.pointerEvents = (pageIndex === currentPage) ? "auto" : "none";
-    left.style.zIndex = 10;       // ensure visible
-    left.classList.remove("flipped");
-    pageIndex++;
+    // TEXT PAGES
+    let pageIndex = 1;
 
-    right.style.opacity = (pageIndex === currentPage) ? 1 : 0;
-    right.style.pointerEvents = (pageIndex === currentPage) ? "auto" : "none";
-    right.style.zIndex = 10;
-    right.classList.remove("flipped");
-    pageIndex++;
-  });
+    pagePairs.forEach(([left, right]) => {
 
-  return;
-}
+      if (pageIndex === currentPage) {
+        left.style.opacity = 1;
+        left.style.pointerEvents = "auto";
+        left.style.zIndex = 10;
+      }
+      pageIndex++;
+
+      if (pageIndex === currentPage) {
+        right.style.opacity = 1;
+        right.style.pointerEvents = "auto";
+        right.style.zIndex = 10;
+      }
+      pageIndex++;
+    });
+
+    return;
+  }
 
   // ---------- DESKTOP MODE ----------
-frontCover.style.zIndex = 3000;
-backCover.style.zIndex = 3000;
+  frontCover.style.zIndex = 3000;
+  backCover.style.zIndex = 3000;
 
   frontCover.classList.toggle("visible", currentPair === 0);
   frontCover.classList.toggle("hidden", currentPair !== 0);
@@ -1136,9 +1155,9 @@ backCover.style.zIndex = 3000;
   backCover.classList.toggle("visible", currentPair === pagePairs.length + 1);
   backCover.classList.toggle("hidden", currentPair !== pagePairs.length + 1);
 
-  pagePairs.forEach((pair,index)=>{
-    const [left,right] = pair;
-    const isCurrent = (currentPair-1 === index);
+  pagePairs.forEach((pair, index) => {
+    const [left, right] = pair;
+    const isCurrent = (currentPair - 1 === index);
 
     left.style.opacity = isCurrent ? 1 : 0;
     right.style.opacity = isCurrent ? 1 : 0;
@@ -1146,7 +1165,7 @@ backCover.style.zIndex = 3000;
     left.style.pointerEvents = isCurrent ? "auto" : "none";
     right.style.pointerEvents = isCurrent ? "auto" : "none";
 
-    if(index < currentPair-1){
+    if (index < currentPair - 1) {
       left.classList.add("flipped");
       right.classList.add("flipped");
     } else {
@@ -1159,12 +1178,13 @@ backCover.style.zIndex = 3000;
 
 // PAGE NAVIGATION
 function nextPage() {
-  if (isMobileView()) {
-    const totalPages = pagePairs.length * 2;
-    if (currentPage < totalPages - 1) {
-      currentPage++;
-      updatePages();
-    }
+if (isMobileView()) {
+  const totalPages = pagePairs.length * 2;
+  if (currentPage < totalPages) {
+    currentPage++;
+    updatePages();
+  }
+}
   } else {
     if (currentPair <= pagePairs.length) {
       currentPair++;
@@ -1174,11 +1194,12 @@ function nextPage() {
 }
 
 function prevPage() {
-  if (isMobileView()) {
-    if (currentPage > 0) {
-      currentPage--;
-      updatePages();
-    }
+if (isMobileView()) {
+  if (currentPage > 0) {
+    currentPage--;
+    updatePages();
+  }
+}
   } else {
     if (currentPair > 0) {
       currentPair--;
@@ -1205,7 +1226,7 @@ document.addEventListener('touchend', e => {
 // RESET ON RESIZE (mobile ↔ desktop)
 window.addEventListener("resize", () => {
   currentPair = 0;
-  currentPage = 1; // FIX
+  currentPage = 0;
   updatePages();
 });
 
