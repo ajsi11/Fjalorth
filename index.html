@@ -136,6 +136,9 @@ button {
 </div>
 
 <script>
+unction isMobileView() {
+  return window.innerWidth <= 768;
+}
 const MAX_CHARS_PER_PAGE = 300;
 const TOTAL_TEXT_PAGES = 60;
 
@@ -1054,6 +1057,7 @@ function splitText(text){
 const pageTexts = splitText(fullText);
 const book = document.getElementById("book");
 let currentPair = 0;
+let currentPage = 0; // used ONLY on mobile
 const pagePairs = [];
 
 // FRONT COVER
@@ -1119,16 +1123,32 @@ function updatePages(){
 }
 
 // PAGE NAVIGATION
-function nextPage(){
-  if(currentPair <= pagePairs.length){
-    currentPair++;
-    updatePages();
+function nextPage() {
+  if (isMobileView()) {
+    const totalPages = pagePairs.length * 2;
+    if (currentPage < totalPages - 1) {
+      currentPage++;
+      updatePages();
+    }
+  } else {
+    if (currentPair <= pagePairs.length) {
+      currentPair++;
+      updatePages();
+    }
   }
 }
-function prevPage(){
-  if(currentPair > 0){
-    currentPair--;
-    updatePages();
+
+function prevPage() {
+  if (isMobileView()) {
+    if (currentPage > 0) {
+      currentPage--;
+      updatePages();
+    }
+  } else {
+    if (currentPair > 0) {
+      currentPair--;
+      updatePages();
+    }
   }
 }
 
@@ -1145,6 +1165,13 @@ document.addEventListener('touchend', e => {
   const deltaX = e.changedTouches[0].screenX - touchStartX;
   if(deltaX > 50) prevPage();
   else if(deltaX < -50) nextPage();
+});
+
+// RESET ON RESIZE (mobile ↔ desktop)
+window.addEventListener("resize", () => {
+  currentPair = 0;
+  currentPage = 0;
+  updatePages();
 });
 
 // INITIAL RENDER
