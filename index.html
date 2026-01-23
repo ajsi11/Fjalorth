@@ -1056,8 +1056,9 @@ function splitText(text){
 
 const pageTexts = splitText(fullText);
 const book = document.getElementById("book");
-let currentPair = 0;
-let currentPage = 0; // used ONLY on mobile
+
+let currentPair = 0;     // desktop
+let currentPage = 1;     // mobile (IMPORTANT)
 const pagePairs = [];
 
 // FRONT COVER
