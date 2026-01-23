@@ -6,127 +6,123 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{
-  margin:0;
-  background:#d4c9bb;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-  font-family:Georgia, serif;
-  overflow:hidden;
+body {
+  margin: 0;
+  background: #d4c9bb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-family: Georgia, serif;
+  overflow: hidden;
 }
 
-.book-wrapper{ position:relative; }
-
-.book{
-  width:1000px;
-  height:650px;
-  perspective:4000px;
-  position:relative;
+.book-wrapper {
+  position: relative;
 }
 
-.spine{
-  position:absolute;
-  left:50%;
-  top:0;
-  width:28px;
-  height:650px;
-  background:linear-gradient(to right,#666,#444,#666);
-  transform:translateX(-50%);
-  z-index:2000;
+.book {
+  width: 1000px;
+  height: 650px;
+  perspective: 3000px;
+  position: relative;
 }
 
-.page{
-  position:absolute;
-  width:500px;
-  height:650px;
-  top:0;
-  padding:45px;
-  background:#fffdf8;
-  box-shadow:0 18px 40px rgba(0,0,0,.35);
-  box-sizing:border-box;
-  transform-style:preserve-3d;
-  backface-visibility:hidden;
-  transition:transform 1s ease;
-  overflow:hidden;
+.spine {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 28px;
+  height: 650px;
+  background: linear-gradient(to right, #666, #444, #666);
+  transform: translateX(-50%);
+  z-index: 2000;
+  box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
 }
 
-.page-content{
-  height:100%;
-  overflow-y:auto;
-  font-size:18px;
-  line-height:1.65;
+.page {
+  position: absolute;
+  width: 500px;
+  height: 650px;
+  top: 0;
+  padding: 45px;
+  background: #fffdf8;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4), inset 0 0 20px rgba(0,0,0,0.05);
+  box-sizing: border-box;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  transition: transform 1s ease, opacity 0.8s ease, box-shadow 0.5s ease;
+  overflow: hidden;
 }
 
-.page h2{
-  text-align:center;
-  font-size:11px;
-  margin:0 0 18px 0;
-  font-weight:normal;
+.page-content {
+  height: 100%;
+  overflow-y: auto;
+  font-size: 18px;
+  line-height: 1.65;
 }
 
-.flipped.left{ transform:rotateY(180deg); }
-.flipped.right{ transform:rotateY(-180deg); }
-.left{ left:0; transform-origin:right; }
-.right{ right:0; transform-origin:left; }
-
-
-.controls{
-  position:absolute;
-  bottom:-90px;
-  width:100%;
-  display:flex;
-  justify-content:center;
-  gap:30px;
+.page h2 {
+  text-align: center;
+  font-size: 11px;
+  margin: 0 0 18px 0;
+  font-weight: normal;
 }
 
-button{
-  padding:14px 32px;
-  font-size:16px;
-  cursor:pointer;
+.left { left: 0; transform-origin: right; }
+.right { right: 0; transform-origin: left; }
+
+.flipped.left { transform: rotateY(-180deg); }
+.flipped.right { transform: rotateY(180deg); }
+
+.cover {
+  transition: opacity 0.8s ease, transform 1s ease;
+  z-index: 3000;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6), inset 0 0 30px rgba(0,0,0,0.1);
 }
-/* ========================= */
-/* 📱 MOBILE FIX (iPhone)   */
-/* ========================= */
-@media (max-width: 768px) {
 
-  body {
-    overflow: auto;
-    height: auto;
-  }
+.cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
-  .book {
-    width: 95vw;
-    height: 70vh;
-    perspective: none;
-  }
+.cover.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
 
-  .page {
-    width: 100%;
-    height: 100%;
-    padding: 20px;
-    box-shadow: none;
-  }
+.cover.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
 
-  .spine {
-    display: none;
-  }
+.controls {
+  position: absolute;
+  bottom: -90px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+}
 
-  .controls {
-    position: fixed;
-    bottom: 15px;
-    gap: 20px;
-  }
+button {
+  padding: 14px 32px;
+  font-size: 16px;
+  cursor: pointer;
+}
 
-  button {
-    padding: 12px 18px;
-    font-size: 14px;
-  }
+/* Mobile responsive */
+@media(max-width:768px) {
+  body { height: auto; overflow: auto; }
+  .book { width: 95vw; height: 70vh; perspective: none; }
+  .page { width: 100%; height: 100%; padding: 20px; box-shadow: none; }
+  .spine { display: none; }
+  .controls { position: fixed; bottom: 15px; gap: 20px; }
+  button { padding: 12px 18px; font-size: 14px; }
 }
 </style>
 </head>
-
 <body>
 
 <div class="book-wrapper">
@@ -134,27 +130,20 @@ button{
   <div class="spine"></div>
 
   <div class="controls">
-    <button onclick="prevPage()">▶KTHE PAS</button>
-    <button onclick="nextPage()">◀ KTHE PARA</button>
+    <button onclick="prevPage()">◀ KTHE PARA</button>
+    <button onclick="nextPage()">▶ KTHE PAS</button>
   </div>
 </div>
 
 <script>
+const MAX_CHARS_PER_PAGE = 300;
+const TOTAL_TEXT_PAGES = 60;
 
-const TOTAL_PAGES = 26;
-const MAX_CHARS_PER_PAGE = 500;
-
-const book = document.getElementById("book");
-let currentPage = 0;
-const pages = [];
-
-const fullText =`
-
+const fullText = `
 -Per kete liber kane punuar: AJSELA RAPI 
 DENISA SHUAIPI  REI MULLA  SAMANTA LEKA  SELMA SHALA
 -Burimi jane : librat e vjeter, interneti, tekstet shkollore, vezhgime ne terren ne zona te ndryshme, etj.
--Ky fjalorth ka ne thelb te ndihmoije pasurimin e gjuhes dhe te kuptuarit e saj
--Ka shprehje dhe fjale te krainave te ndryshme
+-Ky fjalorth ka ne thelb te ndihmoje pasurimin e gjuhes dhe te kuptuarit e saj
 
 
 
@@ -224,7 +213,7 @@ kucur-drurite e perdorur per oxhakut
 
 hon- buze, germine 
 
-jipi-stive me kashtë dhe bar 
+ipi-stive me kashtë dhe bar 
 
 helmeze-bime ne forme shkurre me lule, te bardha, te kuqe, por me shpesh roze 
 
@@ -263,7 +252,7 @@ FJALE NGA KRAHINA E GJIROKASTRES
 
 12)xarenxe- vendi ku kripe bagetive 
 
-13)joshe-siyshja 
+13)joshe-gjyshja 
 
 14)xhixhi-gruaja e xhaxhait, xhaxheshe 
 
@@ -339,7 +328,7 @@ FJALE NGA KRAHINA E SARANDES
 
 18)curek-buke e embel 
 
-19) katog- depo poshte shtepise per te mbajtur kafshet 
+19) katoq- depo poshte shtepise per te mbajtur kafshet 
 
 20)kallamar-pene shkrimi 
 
@@ -382,7 +371,7 @@ FJALE NGA KRAHINA E VLORES
 
 8)stere-vend thelle ne mal ge mban uie te ftahte ne coo stine 
 
-9) fagefurrash-lloj buke e holle 
+9) faqefurrash-lloj buke e holle 
 
 10)kramastar-tip zinhiri qe varet mbi oxhak ku mbahen tenxheret per te gatuar 
 
@@ -390,7 +379,7 @@ FJALE NGA KRAHINA E VLORES
 
 12)harapash -gatim me miell misri dhe copa mishi ne forme pudingu 
 
-13)bereget-drithera 
+13)bereqet-drithera 
 
 14)lento-lento-ngadale, avash 
 
@@ -528,9 +517,7 @@ bukëdhânë – mikpritës, njeri që jep bukë e strehë (arkaizëm)
 
 çehre – fytyrë, pamje e jashtme (arkaizëm) 
 
-derman – zgjidhje, shpëtim nga halli (arkaizëm) 
-
-dylber – djalë i bukur, hijerëndë (arkaizëm) 
+derman – zgjidhje, shpëtim nga halli (arkaizem) 
 
 fukara – i varfër, pa pasuri (arkaizëm) 
 
@@ -640,6 +627,8 @@ Klic – çelës (arkaizëm)
 29. Veth – vathë (dialekt) 
 
  
+
+
 FJALE NGA KRAHINA E DIBRES 
 
 bacë – vëlla i madh; thirrje respekti për një burrë 
@@ -699,6 +688,7 @@ bukëdhânë – mikpritës, njeri që jep bukë e strehë
 gjynah – mëkat 
 
 zanat – mjeshtëri, profesion 
+
 
 FJALE NGA KRAHINA E TIRANES 
 
@@ -761,64 +751,403 @@ FJALE NGA KRAHINA E TIRANES
 29.Rrafsh – drejt, pa dredhi (në të folmen e vjetër) 
 
 30.Kërrus – i përkulur 
+
+
+FJALE TRADICIONALE TE PERDORURA NE FSHAT 
+
+Derman (i dobishëm) 
+
+Ullam (kumbara) 
+
+Pagure (bidon) 
+
+Opinga (këpucë) 
+
+Sut (përparëse) 
+
+Davet (ceremoni) 
+
+Rrogos (tapet) 
+
+Poste (lëkurë qengji në vend të tapetit) 
+
+Minder (copë rruqie) 
+
+Mima (duan drasë) 
+
+Netull (qesë) 
+
+Sgoll (lavaman) 
+
+Muslluk (enë që varet në pemë për ta përdorur si lavaman) 
+
+Cipal (drujtë të vegjël) 
+
+Jamakë (enë prej balte për të gatuar) 
+
+Çitjane (veshje që mbajnë të moshuarit) 
+
+Sepete (vend ku mbahen arra, llokume etj.) 
+
+Katua (garazh) 
+
+Haur (kafshë bagëti) 
+
+Xinë (logje) 
+
+Tab (çantë) 
+
+Katrube (bidona) 
+
+Shtëna (enë prej balte mbante ujë) 
+
+Dybeku (bën dhallë, gjalpë) 
+
+Postëma (lëkurë i thatë) 
+
+Gramafon (si radio) 
+
+Lëm (gumbullon grurë, shën) 
+
+Shork (me lesh dele mbajne coban) 
+
+Shakull (lekure qengji qe mban djathe, sak kosi) 
+
+Veder (Kazani qe mjelin bagetite) 
+
+
+FJALE TE URTA 
+
+1. “E ka fjalën peshë, jo kripë.” 
+
+ Flet me mend e përgjegjësi, jo kot. 
+
+ 2. “S’e merr era malin.” 
+
+ Njeri i fortë në qëndrim, që nuk lëkundet lehtë. 
+
+ 3. “Bukë pa djersë s’ka shije.” 
+
+ Gjërat e fituara pa mund nuk vlerësohen. 
+
+ 4. “E ka ba natën ditë.” 
+
+ Ka punuar shumë, pa pushim. 
+
+ 5. “I del shpirti para fjalës.” 
+
+ Është i duruar dhe flet vetëm kur duhet. 
+
+ 6. “S’ka derë pa prag.” 
+
+ Çdo shtëpi, familje apo njeri ka rregulla dhe kufij. 
+
+ 7. “Plaku din ma shumë se libri.” 
+
+ Përvoja vlen më shumë se teori 
+
+8. “Fjala e randë s’bahet gur, po ta then kockën.” 
+
+Shpjegim: Fjala e keqe ose ofenduese nuk është e prekshme si guri, por lëndon më thellë se çdo goditje fizike. 
+
+9.“Kush s’pyet plakun, humb rrugën.” 
+
+Shpjegim: Përvoja e të moshuarve është udhërrëfyese; kush nuk i dëgjon, gabon në jetë. 
+
+10.“Ma mirë ni mend sot, se një pendim nesër.” 
+
+Shpjegim: Është më mirë të mendosh dhe të këshillohesh para se të veprosh, sesa të pendohesh më vonë. 
+
+11.“Asht burrë fjale, jo burrë zani.” 
+
+Shpjegim: Njeriu i vërtetë tregohet me veprime dhe fjalë të mbajtura, jo me zë të lartë e mburrje. 
+
+12. “E ka zemrën bukë misri.” 
+
+Shpjegim: Ka zemër të pastër e të mirë, si buka e thjeshtë e misrit – pa hile e pa ligësi. 
+
+13. “Çka t’ka shkrue Zoti, s’ta shlyen as lumi i Drinit.” 
+
+Shpjegim: Fati i njeriut është i paracaktuar; nuk mund të shmanget as nga forcat më të mëdha. 
+
+14.“Ara s’mbillet me fjalë.” 
+
+Shpjegim: Vetëm puna jep rezultat; fjalët pa veprime nuk sjellin asgjë. 
+
+15.“Djersa s’bie kot.” 
+
+Shpjegim: Çdo punë dhe sakrificë shpërblehet herët a vonë. 
+
+16. “Kush rri shtrë, çohet pa bukë.” 
+
+Shpjegim: Dembelizmi të çon në varfëri dhe mungesë. 
+
+17. “I fortë si guri i Radikës.” 
+
+Shpjegim: Krahasim për njeri shumë të fortë fizikisht ose shpirtërisht, si gurët e zonës së Radikës. 
+
+18. “I heshtun si mali n’dimer.” 
+
+Shpjegim: Njeri i qetë, i mbyllur në vetvete, që nuk flet kot. 
+
+19. “U ngut si dhia n’thikë.” 
+
+Shpjegim: U hodh pa menduar dhe u fut vetë në telashe. 
  
 
+SHPREHJE TE VJETRA 
+
+1.“U mplak para se t’i zbardhej mustaqja.” 
+
+→ Hallexhi, barra e jetës e ka plakur herët. 
+
+2.“E mban fjalën si guri në themele.” 
+
+→ Fjalë e fortë, e pathyeshme. 
+
+3.“I flet era, jo njeriu.” 
+
+→ Flet pa mend, pa përgjegjësi. 
+
+4.“S’i ha bukë fjala e keqe.” 
+
+→ Fyerja nuk harrohet. 
+
+5.“U tret si kripa në ujë.” 
+
+→ U zhduk pa lënë gjurmë. 
+
+FJALË SHUMË TË RRALLA – KRUJË 
+
+1.Brajkë – pantallona të vjetra prej shajaku 
+
+2.Xhoke – rrobë e sipërme leshi 
+
+3.Shokë – brez i gjerë leshi 
+
+4.Kërrabë – shkop i përkulur për bagëti 
+
+5.Tinar – enë balte për ujë 
+
+6.Govatë – enë druri për larje 
+
+7.Magje – vend druri për brumin 
+
+8.Furrik – furrë e vogël shtëpie 
+
+9.Qyp – enë e madhe balte 
+
+10.Çanak – enë druri për ushqim
  
+ 
+THENIE TE VJETRA
+
+1.“U mplak para se t’i zbardhej mustaqja.” 
+
+→ Hallexhi, barra e jetës e ka plakur herët. 
+
+2.“E mban fjalën si guri në themele.” 
+
+→ Fjalë e fortë, e pathyeshme. 
+
+3.“I flet era, jo njeriu.” 
+
+→ Flet pa mend, pa përgjegjësi. 
+
+4.“S’i ha bukë fjala e keqe.” 
+
+→ Fyerja nuk harrohet. 
+
+5.“U tret si kripa në ujë.” 
+
+→ U zhduk pa lënë gjurmë. 
+
+
+FJALË SHUMË TË RRALLA – KRUJË 
+
+1.Brajkë – pantallona të vjetra prej shajaku 
+
+2.Xhoke – rrobë e sipërme leshi 
+
+3.Shokë – brez i gjerë leshi 
+
+4.Kërrabë – shkop i përkulur për bagëti 
+
+5.Tinar – enë balte për ujë 
+
+6.Govatë – enë druri për larje 
+
+7.Magje – vend druri për brumin 
+
+8.Furrik – furrë e vogël shtëpie 
+
+9.Qyp – enë e madhe balte 
+
+10.Çanak – enë druri për ushqim 
+
+
+FJALË TË HARRUARA TË JETËS FSHATARE 
+
+11.Lëmë – vend për shirje drithi 
+
+12.Bunë – grumbull bari 
+
+13.Vathë – rrethim bagëtish 
+
+14.Tagji – ushqim për bagëti 
+
+15.Parmendë – plug i vjetër 
+
+16.Kosor – drapër i madh 
+
+17.Shkarpë – degë të thata 
+
+18.Rrahë – shpat mali 
+
+19.Gropëz – vend i ulët 
+
+20.Zgjedhë – pajisje për qe 
+
+  
+FJALË ARKAIKE TË NATYRËS & MOTIT 
+
+21.Zheg – vapë e rëndë 
+
+22.Brymë – ngricë e lehtë 
+
+23.Shllimë – mjegull e dendur 
+
+24.Puhizë – erë e lehtë (sot rrallë) 
+
+25.Rrebesh – shi i fortë (formë e vjetër) 
+
+ 
+FJALË SHUMË TË VJETRA QE TREGOJNE CILESITE E KARAKTERIT
+
+26.Zorli – i fortë, i vrazhdë 
+
+27.Hileqar – dinak 
+
+28.Kokëtrashë – i trashë në mend 
+
+29.Fjalaq – llafazan 
+
+30.Marakli – i dhënë pas diçkaje  
 `;
+
 function splitText(text){
   const chunks = [];
   let current = "";
-
   text.split("\n").forEach(line=>{
     if((current + line).length > MAX_CHARS_PER_PAGE){
       chunks.push(current);
       current = line + "\n";
-    }else{
+    } else {
       current += line + "\n";
     }
   });
-
   if(current.trim()) chunks.push(current);
-  return chunks;
+  while(chunks.length < TOTAL_TEXT_PAGES) chunks.push(""); 
+  return chunks.slice(0,TOTAL_TEXT_PAGES);
 }
 
 const pageTexts = splitText(fullText);
+const book = document.getElementById("book");
+let currentPair = 0;
+const pagePairs = [];
 
-for(let i = TOTAL_PAGES; i >=1; i--){
-  const page = document.createElement("div");
-  page.className = "page " + (i % 2 === 0 ? "right" : "left");
-  page.style.zIndex = i;
+// FRONT COVER
+const frontCover = document.createElement("div");
+frontCover.className = "page left cover visible";
+frontCover.innerHTML = `<img src="kopertina.jpeg" alt="Front Cover">`;
+book.appendChild(frontCover);
 
-  page.innerHTML = `
-    <h2>${i}</h2>
-    <div class="page-content">
-      ${(pageTexts[i-1] || "").replace(/\n/g,"<br>")}
-    </div>
-  `;
+// PAGES
+for(let i=0;i<TOTAL_TEXT_PAGES;i+=2){
+  const leftPage = document.createElement("div");
+  leftPage.className = "page left";
+  leftPage.style.zIndex = TOTAL_TEXT_PAGES - i;
 
-  book.appendChild(page);
-  pages.push(page);
+  leftPage.innerHTML = `<h2>${i+1}</h2><div class="page-content">${(pageTexts[i]||"").replace(/\n/g,"<br>")}</div>`;
+
+  const rightPage = document.createElement("div");
+  rightPage.className = "page right";
+  rightPage.style.zIndex = TOTAL_TEXT_PAGES - i - 1;
+
+  rightPage.innerHTML = `<h2>${i+2}</h2><div class="page-content">${(pageTexts[i+1]||"").replace(/\n/g,"<br>")}</div>`;
+
+  book.appendChild(leftPage);
+  book.appendChild(rightPage);
+  pagePairs.push([leftPage,rightPage]);
 }
 
+// BACK COVER
+const backCover = document.createElement("div");
+backCover.className = "page right cover hidden";
+backCover.innerHTML = `<img src="kapaku.jpeg" alt="Back Cover">`;
+book.appendChild(backCover);
+
+// UPDATE PAGE VISIBILITY
 function updatePages(){
-  pages.forEach((p,i)=>{
-    i < currentPage ? p.classList.add("flipped") : p.classList.remove("flipped");
+  frontCover.classList.toggle("visible", currentPair === 0);
+  frontCover.classList.toggle("hidden", currentPair !== 0);
+
+  backCover.classList.toggle("visible", currentPair === pagePairs.length+1);
+  backCover.classList.toggle("hidden", currentPair !== pagePairs.length+1);
+
+  pagePairs.forEach((pair,index)=>{
+    const [left,right] = pair;
+    const isCurrent = (currentPair-1 === index);
+
+    left.style.opacity = isCurrent ? 1 : 0;
+    left.style.pointerEvents = isCurrent ? "auto" : "none";
+    right.style.opacity = isCurrent ? 1 : 0;
+    right.style.pointerEvents = isCurrent ? "auto" : "none";
+
+    if(index < currentPair-1){
+      left.classList.add("flipped");
+      right.classList.add("flipped");
+      left.style.zIndex = index; 
+      right.style.zIndex = index;
+    } else {
+      left.classList.remove("flipped");
+      right.classList.remove("flipped");
+      left.style.zIndex = TOTAL_TEXT_PAGES - index;
+      right.style.zIndex = TOTAL_TEXT_PAGES - index - 1;
+    }
   });
 }
 
+// PAGE NAVIGATION
 function nextPage(){
-  if(currentPage < pages.length){
-    currentPage++;
+  if(currentPair <= pagePairs.length){
+    currentPair++;
     updatePages();
   }
 }
 function prevPage(){
-  if(currentPage > 0){
-    currentPage--;
+  if(currentPair > 0){
+    currentPair--;
     updatePages();
   }
 }
 
+// KEYBOARD SUPPORT
+document.addEventListener('keydown', e => {
+  if(e.key === "ArrowRight") nextPage();
+  if(e.key === "ArrowLeft") prevPage();
+});
+
+// TOUCH SUPPORT FOR MOBILE
+let touchStartX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+document.addEventListener('touchend', e => {
+  const deltaX = e.changedTouches[0].screenX - touchStartX;
+  if(deltaX > 50) prevPage();
+  else if(deltaX < -50) nextPage();
+});
+
+// INITIAL RENDER
 updatePages();
 </script>
 
