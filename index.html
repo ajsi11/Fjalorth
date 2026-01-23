@@ -1094,31 +1094,56 @@ book.appendChild(backCover);
 
 // UPDATE PAGE VISIBILITY
 function updatePages(){
+
+  // ---------- MOBILE MODE ----------
+  if (isMobileView()) {
+
+    frontCover.classList.add("hidden");
+    backCover.classList.add("hidden");
+
+    let pageIndex = 1; // IMPORTANT: pages start at 1
+
+    pagePairs.forEach(([left, right]) => {
+
+      // LEFT page
+      left.style.opacity = (pageIndex === currentPage) ? 1 : 0;
+      left.style.pointerEvents = (pageIndex === currentPage) ? "auto" : "none";
+      left.classList.remove("flipped");
+      pageIndex++;
+
+      // RIGHT page
+      right.style.opacity = (pageIndex === currentPage) ? 1 : 0;
+      right.style.pointerEvents = (pageIndex === currentPage) ? "auto" : "none";
+      right.classList.remove("flipped");
+      pageIndex++;
+    });
+
+    return;
+  }
+
+  // ---------- DESKTOP MODE ----------
   frontCover.classList.toggle("visible", currentPair === 0);
   frontCover.classList.toggle("hidden", currentPair !== 0);
 
-  backCover.classList.toggle("visible", currentPair === pagePairs.length+1);
-  backCover.classList.toggle("hidden", currentPair !== pagePairs.length+1);
+  backCover.classList.toggle("visible", currentPair === pagePairs.length + 1);
+  backCover.classList.toggle("hidden", currentPair !== pagePairs.length + 1);
 
   pagePairs.forEach((pair,index)=>{
     const [left,right] = pair;
     const isCurrent = (currentPair-1 === index);
 
     left.style.opacity = isCurrent ? 1 : 0;
-    left.style.pointerEvents = isCurrent ? "auto" : "none";
     right.style.opacity = isCurrent ? 1 : 0;
+
+    left.style.pointerEvents = isCurrent ? "auto" : "none";
     right.style.pointerEvents = isCurrent ? "auto" : "none";
 
     if(index < currentPair-1){
       left.classList.add("flipped");
       right.classList.add("flipped");
-      left.style.zIndex = index; 
-      right.style.zIndex = index;
     } else {
       left.classList.remove("flipped");
       right.classList.remove("flipped");
-      left.style.zIndex = TOTAL_TEXT_PAGES - index;
-      right.style.zIndex = TOTAL_TEXT_PAGES - index - 1;
     }
   });
 }
@@ -1171,7 +1196,7 @@ document.addEventListener('touchend', e => {
 // RESET ON RESIZE (mobile ↔ desktop)
 window.addEventListener("resize", () => {
   currentPair = 0;
-  currentPage = 0;
+  currentPage = 1; // FIX
   updatePages();
 });
 
